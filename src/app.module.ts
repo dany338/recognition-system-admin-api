@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ClientsModule } from './clients/clients.module';
@@ -32,9 +33,26 @@ import { RecognitionStatesModule } from './recognition-states/recognition-states
 import { ClientTaskResultsModule } from './client-task-results/client-task-results.module';
 import { RecognitionInferenceRawModule } from './recognition-inference-raw/recognition-inference-raw.module';
 import { RecognitionImagesSysModule } from './recognition-images-sys/recognition-images-sys.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [ClientsModule, ClientsConfigsModule, TasksModule, TasksRulesModule, TaskRuleParametersModule, ClientMetadataSchemasModule, ClientMetadataModule, ClientEventsModule, EventsModule, RecognitionEventsModule, RecognitionImagesModule, RecognitionInferenceModule, LibraryObjectsModule, LibraryObjectAttributesModule, ObjectAttributesModule, RuleOutputsModule, RulesModule, RulesModelsModule, ModelsModule, RuleParametersModule, RuleResponsesModule, ResponsesModule, RecognitionRuleResultsModule, RecognitionTaskResultsModule, RecognitionOutputsModule, RecognitionsModule, ImagesModule, RecognitionStatesModule, ClientTaskResultsModule, RecognitionInferenceRawModule, RecognitionImagesSysModule],
+  imports: [
+    ConfigModule.forRoot({}),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      autoLoadEntities: true,
+      // entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      synchronize: true,
+    }),
+    ClientsModule,
+    ClientsConfigsModule,
+    TasksModule,
+    TasksRulesModule, TaskRuleParametersModule, ClientMetadataSchemasModule, ClientMetadataModule, ClientEventsModule, EventsModule, RecognitionEventsModule, RecognitionImagesModule, RecognitionInferenceModule, LibraryObjectsModule, LibraryObjectAttributesModule, ObjectAttributesModule, RuleOutputsModule, RulesModule, RulesModelsModule, ModelsModule, RuleParametersModule, RuleResponsesModule, ResponsesModule, RecognitionRuleResultsModule, RecognitionTaskResultsModule, RecognitionOutputsModule, RecognitionsModule, ImagesModule, RecognitionStatesModule, ClientTaskResultsModule, RecognitionInferenceRawModule, RecognitionImagesSysModule],
   controllers: [AppController],
   providers: [AppService],
 })
