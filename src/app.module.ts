@@ -34,6 +34,7 @@ import { ClientTaskResultsModule } from './client-task-results/client-task-resul
 import { RecognitionInferenceRawModule } from './recognition-inference-raw/recognition-inference-raw.module';
 import { RecognitionImagesSysModule } from './recognition-images-sys/recognition-images-sys.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -47,12 +48,44 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       // entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
+      synchronize: false,
+      ssl: {
+        rejectUnauthorized: false,
+      },
     }),
     ClientsModule,
     ClientsConfigsModule,
     TasksModule,
-    TasksRulesModule, TaskRuleParametersModule, ClientMetadataSchemasModule, ClientMetadataModule, ClientEventsModule, EventsModule, RecognitionEventsModule, RecognitionImagesModule, RecognitionInferenceModule, LibraryObjectsModule, LibraryObjectAttributesModule, ObjectAttributesModule, RuleOutputsModule, RulesModule, RulesModelsModule, ModelsModule, RuleParametersModule, RuleResponsesModule, ResponsesModule, RecognitionRuleResultsModule, RecognitionTaskResultsModule, RecognitionOutputsModule, RecognitionsModule, ImagesModule, RecognitionStatesModule, ClientTaskResultsModule, RecognitionInferenceRawModule, RecognitionImagesSysModule],
+    TasksRulesModule,
+    TaskRuleParametersModule,
+    ClientMetadataSchemasModule,
+    ClientMetadataModule,
+    ClientEventsModule,
+    EventsModule,
+    RecognitionEventsModule,
+    RecognitionImagesModule,
+    RecognitionInferenceModule,
+    LibraryObjectsModule,
+    LibraryObjectAttributesModule,
+    ObjectAttributesModule,
+    RuleOutputsModule,
+    RulesModule,
+    RulesModelsModule,
+    ModelsModule,
+    RuleParametersModule,
+    RuleResponsesModule,
+    ResponsesModule,
+    RecognitionRuleResultsModule,
+    RecognitionTaskResultsModule,
+    RecognitionOutputsModule,
+    RecognitionsModule,
+    ImagesModule,
+    RecognitionStatesModule,
+    ClientTaskResultsModule,
+    RecognitionInferenceRawModule,
+    RecognitionImagesSysModule,
+    CommonModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
