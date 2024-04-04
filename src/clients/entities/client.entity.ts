@@ -4,16 +4,17 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { v4 as uuid } from 'uuid';
+import { ClientsConfig } from '../../clients-configs/entities/clients-config.entity';
 
-@Entity('clients')
+@Entity({ name: 'clients' })
 export class Client {
   @PrimaryGeneratedColumn('increment')
-  // @PrimaryColumn('integer', { generated: true, nullable: false })
   client_id: number;
 
   @Column('uuid', { nullable: false, unique: true })
@@ -27,6 +28,12 @@ export class Client {
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
+
+  @OneToMany(() => ClientsConfig, (clientConfig) => clientConfig.client_id, {
+    cascade: true,
+    eager: true,
+  })
+  configs?: ClientsConfig[];
 
   @BeforeInsert()
   checkClientUidInsert() {

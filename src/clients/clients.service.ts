@@ -8,10 +8,11 @@ import {
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Timestamp } from 'typeorm';
-import { Client } from './entities/client.entity';
+import { DataSource, DeepPartial, Repository } from 'typeorm';
 import { v4 as uuid, validate as isUUID } from 'uuid';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { Client } from './entities/client.entity';
+import { PaginationDto } from '../common/dtos/pagination.dto';
+import { ClientsConfig } from '../clients-configs/entities/clients-config.entity';
 
 @Injectable()
 export class ClientsService {
@@ -20,30 +21,45 @@ export class ClientsService {
   constructor(
     @InjectRepository(Client)
     private readonly clientRepository: Repository<Client>,
+    @InjectRepository(ClientsConfig)
+    private readonly clientsConfigRepository: Repository<ClientsConfig>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async create(createClientDto: CreateClientDto) {
     try {
-      const newCreateClientDto = {
-        ...createClientDto,
+      const { configs = [], ...clientDetails } = createClientDto;
+      const client = this.clientRepository.create({
+        ...clientDetails,
         client_uid: uuid(),
-      };
-      const client = this.clientRepository.create(newCreateClientDto);
+        configs: configs.map((config) =>
+          this.clientsConfigRepository.create(
+            config as DeepPartial<ClientsConfig>,
+          ),
+        ),
+      });
       await this.clientRepository.save(client);
-      return client;
+      return { ...client, configs };
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
 
-  findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
 
-    return this.clientRepository.find({
+    const clients = await this.clientRepository.find({
       take: limit,
       skip: offset,
-      // TODO: relaciones
+      relations: {
+        configs: true,
+      },
     });
+
+    return clients.map((client) => ({
+      ...client,
+      configs: client.configs.map((config) => config.default_bucket),
+    }));
   }
 
   async findOne(term: string) {
@@ -52,12 +68,13 @@ export class ClientsService {
     if (isUUID(term)) {
       client = await this.clientRepository.findOneBy({ client_uid: term });
     } else {
-      const queryBuilder = this.clientRepository.createQueryBuilder();
+      const queryBuilder = this.clientRepository.createQueryBuilder('clie');
       client = await queryBuilder
         .where('client_id =:client_id or UPPER(name) =:name', {
-          client_id: term,
+          client_id: +term,
           name: term.toLowerCase(),
         })
+        .leftJoinAndSelect('clie.configs', 'clieConfigs')
         .getOne();
     }
 
@@ -66,24 +83,52 @@ export class ClientsService {
     return client;
   }
 
+  async findOnePlain(term: string) {
+    const { configs = [], ...rest } = await this.findOne(term);
+    return {
+      ...rest,
+      configs: configs.map((config) => config.default_bucket),
+    };
+  }
+
   async update(id: number, updateProductDto: UpdateClientDto) {
+    const { configs, ...toUpdate } = updateProductDto;
+
     const client = await this.clientRepository.preload({
       client_id: id,
-      ...updateProductDto,
+      ...toUpdate,
     });
 
     if (!client) throw new NotFoundException(`Client with id: ${id} not found`);
 
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-      await this.clientRepository.save(client);
-      return client;
+      if (configs) {
+        // await queryRunner.manager.delete(ClientsConfig, { client: { client_id: id } });
+
+        client.configs = configs.map((config) =>
+          this.clientsConfigRepository.create(config as DeepPartial<ClientsConfig>),
+        );
+      }
+
+      await queryRunner.manager.save(client);
+
+      await queryRunner.commitTransaction();
+      await queryRunner.release();
+
+      return this.findOnePlain(`${id}`);
     } catch (error) {
+      await queryRunner.rollbackTransaction();
+      await queryRunner.release();
       this.handleDBExceptions(error);
     }
   }
 
   async remove(id: number) {
-    const client = await this.clientRepository.findOneBy({ client_id: id });
+    const client = await this.findOne(`${id}`);
     await this.clientRepository.remove(client);
   }
 
@@ -91,9 +136,22 @@ export class ClientsService {
     if (error.code === '23505') throw new BadRequestException(error.detail);
 
     this.logger.error(error);
-    // console.log(error)
     throw new InternalServerErrorException(
       'Unexpected error, check server logs',
     );
+  }
+
+  async deleteAllClients() {
+    const query = this.clientRepository.createQueryBuilder('client');
+
+    try {
+      return await query
+        .delete()
+        .where({})
+        .execute();
+
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 }

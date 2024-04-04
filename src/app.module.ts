@@ -35,6 +35,7 @@ import { RecognitionInferenceRawModule } from './recognition-inference-raw/recog
 import { RecognitionImagesSysModule } from './recognition-images-sys/recognition-images-sys.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from './common/common.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -85,6 +86,7 @@ import { CommonModule } from './common/common.module';
     RecognitionInferenceRawModule,
     RecognitionImagesSysModule,
     CommonModule,
+    SeedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

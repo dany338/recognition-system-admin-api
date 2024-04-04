@@ -31,7 +31,7 @@ export class ClientsController {
 
   @Get(':term')
   findOne(@Param('term') term: string) {
-    return this.clientsService.findOne(term);
+    return this.clientsService.findOnePlain(term);
   }
 
   @Patch(':id')
