@@ -1,34 +1,56 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseUUIDPipe,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ClientMetadataSchemasService } from './client-metadata-schemas.service';
 import { CreateClientMetadataSchemaDto } from './dto/create-client-metadata-schema.dto';
 import { UpdateClientMetadataSchemaDto } from './dto/update-client-metadata-schema.dto';
+import { PaginationDto } from './../common/dtos/pagination.dto';
 
 @Controller('client-metadata-schemas')
 export class ClientMetadataSchemasController {
-  constructor(private readonly clientMetadataSchemasService: ClientMetadataSchemasService) {}
+  constructor(
+    private readonly clientMetadataSchemasService: ClientMetadataSchemasService,
+  ) {}
 
   @Post()
   create(@Body() createClientMetadataSchemaDto: CreateClientMetadataSchemaDto) {
-    return this.clientMetadataSchemasService.create(createClientMetadataSchemaDto);
+    return this.clientMetadataSchemasService.create(
+      createClientMetadataSchemaDto,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.clientMetadataSchemasService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.clientMetadataSchemasService.findAll(paginationDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clientMetadataSchemasService.findOne(+id);
+  @Get(':term')
+  findOne(@Param('term') term: string) {
+    return this.clientMetadataSchemasService.findOne(term);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClientMetadataSchemaDto: UpdateClientMetadataSchemaDto) {
-    return this.clientMetadataSchemasService.update(+id, updateClientMetadataSchemaDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateClientMetadataSchemaDto: UpdateClientMetadataSchemaDto,
+  ) {
+    return this.clientMetadataSchemasService.update(
+      id,
+      updateClientMetadataSchemaDto,
+    );
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientMetadataSchemasService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.clientMetadataSchemasService.remove(id);
   }
 }

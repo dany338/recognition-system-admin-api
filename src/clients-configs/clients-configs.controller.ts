@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { ClientsConfigsService } from './clients-configs.service';
 import { CreateClientsConfigDto } from './dto/create-clients-config.dto';
 import { UpdateClientsConfigDto } from './dto/update-clients-config.dto';
+import { PaginationDto } from './../common/dtos/pagination.dto';
 
 @Controller('clients-configs')
 export class ClientsConfigsController {
@@ -13,22 +14,22 @@ export class ClientsConfigsController {
   }
 
   @Get()
-  findAll() {
-    return this.clientsConfigsService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.clientsConfigsService.findAll(paginationDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clientsConfigsService.findOne(+id);
+  @Get(':term')
+  findOne(@Param('term') term: string) {
+    return this.clientsConfigsService.findOne(term);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClientsConfigDto: UpdateClientsConfigDto) {
-    return this.clientsConfigsService.update(+id, updateClientsConfigDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateClientsConfigDto: UpdateClientsConfigDto) {
+    return this.clientsConfigsService.update(id, updateClientsConfigDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientsConfigsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.clientsConfigsService.remove(id);
   }
 }

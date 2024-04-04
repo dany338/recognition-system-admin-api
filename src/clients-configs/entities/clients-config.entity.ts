@@ -3,11 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Client } from '../../clients/entities/client.entity';
-import { ClientMetadataSchema } from '../../client-metadata-schemas/entities/client-metadata-schema.entity';
+import { Client } from './../../clients/entities/client.entity';
+import { ClientMetadataSchema } from './../../client-metadata-schemas/entities/client-metadata-schema.entity';
+import { Task } from './../../tasks/entities/task.entity';
 
 @Entity({ name: 'client_configs' })
 export class ClientsConfig {
@@ -29,12 +31,19 @@ export class ClientsConfig {
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 
+  @OneToMany(() => Task, (task) => task.client_config_id, {
+    cascade: true,
+    eager: true,
+  })
+  tasks?: Task[];
+
   @ManyToOne(() => Client, (client) => client.configs, { onDelete: 'CASCADE' })
   client: Client;
 
   @ManyToOne(
     () => ClientMetadataSchema,
     (clientMetadataSchema) => clientMetadataSchema.configs,
+    { onDelete: 'CASCADE' },
   )
   clientMetadataSchema: ClientMetadataSchema;
 }

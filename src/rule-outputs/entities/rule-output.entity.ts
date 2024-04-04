@@ -1,4 +1,31 @@
-import { Entity } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { Rule } from './../../rules/entities/rule.entity';
 
 @Entity({ name: 'rule_outputs' })
-export class RuleOutput {}
+export class RuleOutput {
+  @PrimaryGeneratedColumn('increment')
+  rule_output_id: number;
+
+  @Column('int', { nullable: false })
+  rule_id: number;
+
+  @Column('text', { nullable: false })
+  type: string;
+
+  @Column('text', { nullable: false })
+  key: string;
+
+  @Column('text', { nullable: false })
+  label: string;
+
+  @ManyToOne(() => Rule, (rule) => rule.rulesparameters, { onDelete: 'CASCADE' })
+  rule: Rule;
+}

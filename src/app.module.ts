@@ -1,3 +1,4 @@
+import { join } from 'path';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -36,6 +37,8 @@ import { RecognitionImagesSysModule } from './recognition-images-sys/recognition
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
+import { FilesModule } from './files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
@@ -54,6 +57,11 @@ import { SeedModule } from './seed/seed.module';
         rejectUnauthorized: false,
       },
     }),
+
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+
     ClientsModule,
     ClientsConfigsModule,
     TasksModule,
@@ -87,6 +95,7 @@ import { SeedModule } from './seed/seed.module';
     RecognitionImagesSysModule,
     CommonModule,
     SeedModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

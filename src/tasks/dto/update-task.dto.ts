@@ -1,3 +1,4 @@
+import { IsArray, IsDate, IsOptional, IsString, MinLength } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateTaskDto } from './create-task.dto';
 
