@@ -1,4 +1,4 @@
-import { Entity } from "typeorm";
+import { Entity } from 'typeorm';
 
-@Entity('client_task_results')
+@Entity({ name: 'client_task_results' })
 export class ClientTaskResult {}

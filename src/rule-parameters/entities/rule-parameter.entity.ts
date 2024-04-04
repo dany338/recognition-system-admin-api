@@ -1,4 +1,4 @@
-import { Entity } from "typeorm";
+import { Entity } from 'typeorm';
 
-@Entity('rule_parameters')
+@Entity({ name: 'rule_parameters' })
 export class RuleParameter {}

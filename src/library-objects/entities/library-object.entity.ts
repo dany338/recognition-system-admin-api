@@ -1,4 +1,4 @@
 import { Entity } from "typeorm";
 
-@Entity('library_objects')
+@Entity({ name: 'library_objects' })
 export class LibraryObject {}

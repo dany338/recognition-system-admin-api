@@ -1,4 +1,4 @@
-import { Entity } from "typeorm";
+import { Entity } from 'typeorm';
 
-@Entity('recognitions')
+@Entity({ name: 'recognitions' })
 export class Recognition {}

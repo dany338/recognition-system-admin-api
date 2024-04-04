@@ -1,4 +1,4 @@
 import { Entity } from "typeorm";
 
-@Entity('object_attributes')
+@Entity({ name: 'object_attributes' })
 export class ObjectAttribute {}

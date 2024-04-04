@@ -1,4 +1,4 @@
-import { Entity } from "typeorm";
+import { Entity } from 'typeorm';
 
-@Entity('library_object_attributes')
+@Entity({ name: 'library_object_attributes' })
 export class LibraryObjectAttribute {}

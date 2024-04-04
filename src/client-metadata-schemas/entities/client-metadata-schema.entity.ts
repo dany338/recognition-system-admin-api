@@ -1,7 +1,14 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ClientsConfig } from "../../clients-configs/entities/clients-config.entity";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { ClientsConfig } from '../../clients-configs/entities/clients-config.entity';
 
-@Entity('client_metadata_schemas')
+@Entity({ name: 'client_metadata_schemas' })
 export class ClientMetadataSchema {
   @PrimaryGeneratedColumn('increment')
   client_metadata_schema_id: number;

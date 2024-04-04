@@ -1,4 +1,4 @@
 import { Entity } from "typeorm";
 
-@Entity('responses')
+@Entity({ name: 'responses' })
 export class Response {}

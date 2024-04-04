@@ -1,4 +1,4 @@
 import { Entity } from "typeorm";
 
-@Entity('events')
+@Entity({ name: 'events' })
 export class Event {}
