@@ -57,7 +57,7 @@ export class ClientsConfigsService {
 
     return clientsConfigs.map((clientsConfig) => ({
       ...clientsConfig,
-      tasks: clientsConfig.tasks.map((task) => task.name),
+      // tasks: clientsConfig.tasks.map((task) => task.name),
     }));
   }
 
@@ -83,11 +83,11 @@ export class ClientsConfigsService {
   }
 
   async findOnePlain(term: string) {
-    const { tasks = [], ...rest } = await this.findOne(term);
-    return {
-      ...rest,
-      tasks: tasks.map((task) => task.run_type),
-    };
+    // const { tasks = [], ...rest } = await this.findOne(term);
+    // return {
+    //   ...rest,
+    //   tasks: tasks.map((task) => task.run_type),
+    // };
   }
 
   async update(id: number, updateProductDto: UpdateClientsConfigDto) {
@@ -108,9 +108,9 @@ export class ClientsConfigsService {
       if (tasks) {
         // await queryRunner.manager.delete(ClientsConfig, { client: { client_id: id } });
 
-        clientConfig.tasks = tasks.map((task) =>
-          this.taskRepository.create(task as DeepPartial<Task>),
-        );
+        // clientConfig.tasks = tasks.map((task) =>
+        //   this.taskRepository.create(task as DeepPartial<Task>),
+        // );
       }
 
       await queryRunner.manager.save(clientConfig);

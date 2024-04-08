@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -22,7 +23,7 @@ export class ClientMetadataSchema {
   @Column('bool', { nullable: false })
   validation: boolean;
 
-  @Column('number', { nullable: true })
+  @Column('int', { nullable: true })
   validator_id: number;
 
   @Column('text', { nullable: false })
@@ -34,15 +35,16 @@ export class ClientMetadataSchema {
   @Column('text', { nullable: false })
   label: string;
 
-  @OneToMany(() => ClientsConfig, (clientConfig) => clientConfig.client_id, {
-    cascade: true,
-    eager: true,
-  })
-  configs?: ClientsConfig[];
-
   @CreateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
+
+  @OneToMany(() => ClientsConfig, (clientConfig) => clientConfig.client, {
+    cascade: true,
+    eager: true,
+  })
+  // @JoinColumn({ name: 'client_metadata_schema_id' })
+  configs?: ClientsConfig[];
 }

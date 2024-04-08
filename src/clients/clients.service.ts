@@ -31,7 +31,7 @@ export class ClientsService {
       const { configs = [], ...clientDetails } = createClientDto;
       const client = this.clientRepository.create({
         ...clientDetails,
-        client_uid: uuid(),
+        client_uid: clientDetails?.client_uid ?? uuid(),
         configs: configs.map((config) =>
           this.clientsConfigRepository.create(
             config as DeepPartial<ClientsConfig>,
@@ -46,20 +46,44 @@ export class ClientsService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { limit = 10, offset = 0 } = paginationDto;
+    try {
+      const { limit = 10, offset = 0 } = paginationDto;
 
-    const clients = await this.clientRepository.find({
-      take: limit,
-      skip: offset,
-      relations: {
-        configs: true,
-      },
-    });
+      const clients = await this.clientRepository.find({
+        take: limit,
+        skip: offset,
+        relations: {
+          configs: {
+            tasks: {
+              tasksrules: {
+                taskruleparameters: true,
+                rule: true,
+              },
+            },
+          },
+        },
+      }) ?? [];
 
-    return clients.map((client) => ({
-      ...client,
-      configs: client.configs.map((config) => config.default_bucket),
-    }));
+
+      return clients.map((client) => ({
+        ...client,
+        configs: client.configs.map((config) => ({
+          default_bucket: config.default_bucket,
+          tasks: config.tasks.map((task) => ({
+            name: task.name,
+            tasksrules: task.tasksrules.map((rule) => ({
+              task_rule_id: rule.task_rule_id,
+              taskruleparameters: rule.taskruleparameters.map((parameter) => ({
+                value: parameter.value,
+              })),
+              rule: rule.rule.name,
+            }))
+          }))
+        }))
+      }));
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
   async findOne(term: string) {

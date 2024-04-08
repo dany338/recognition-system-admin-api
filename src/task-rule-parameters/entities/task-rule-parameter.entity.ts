@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -30,5 +31,6 @@ export class TaskRuleParameter {
   updated_at: Date;
 
   @ManyToOne(() => TasksRule, (taskrule) => taskrule.taskruleparameters, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'task_rule_id', referencedColumnName: 'task_rule_id' })
   taskrule: TasksRule;
 }

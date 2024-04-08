@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -26,6 +27,7 @@ export class RuleOutput {
   @Column('text', { nullable: false })
   label: string;
 
-  @ManyToOne(() => Rule, (rule) => rule.rulesparameters, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Rule, (rule) => rule.ruleoutputs, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'rule_id', referencedColumnName: 'rule_id' })
   rule: Rule;
 }

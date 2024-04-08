@@ -1,10 +1,16 @@
-import { IsArray, IsDate, IsOptional, IsString, MinLength } from 'class-validator';
-// import { SeedClientConfig } from './../../seed/data/seed-data';
+import {
+  IsArray,
+  IsDate,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MinLength,
+} from 'class-validator';
 import { DeepPartial } from 'typeorm';
 import { ClientsConfig } from './../../clients-configs/entities/clients-config.entity';
 
 export class CreateClientDto {
-  @IsString()
+  @IsUUID()
   @IsOptional()
   client_uid: string;
 

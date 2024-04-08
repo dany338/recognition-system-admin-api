@@ -35,7 +35,7 @@ export class Model {
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 
-  @OneToMany(() => RulesModel, (rulesmodel) => rulesmodel.model_id, {
+  @OneToMany(() => RulesModel, (rulesmodel) => rulesmodel.model, {
     cascade: true,
     eager: true,
   })

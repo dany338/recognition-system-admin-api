@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -33,5 +34,6 @@ export class RuleParameter {
   updated_at: Date;
 
   @ManyToOne(() => Rule, (rule) => rule.rulesparameters, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'rule_id', referencedColumnName: 'rule_id' })
   rule: Rule;
 }

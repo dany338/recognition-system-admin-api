@@ -1,5 +1,11 @@
-import { IsArray, IsDate, IsInt, IsOptional, IsString, MinLength } from 'class-validator';
-// import { SeedClientConfig } from './../../seed/data/seed-data';
+import {
+  IsArray,
+  IsDate,
+  IsInt,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { DeepPartial } from 'typeorm';
 import { Task } from './../../tasks/entities/task.entity';
 

@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -40,9 +41,10 @@ export class Task {
   updated_at: Date;
 
   @ManyToOne(() => ClientsConfig, (clientsConfig) => clientsConfig.tasks, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'client_config_id', referencedColumnName: 'client_config_id' })
   client_config: ClientsConfig;
 
-  @OneToMany(() => TasksRule, (tasksrule) => tasksrule.task_id, {
+  @OneToMany(() => TasksRule, (tasksrule) => tasksrule.task, {
     cascade: true,
     eager: true,
   })

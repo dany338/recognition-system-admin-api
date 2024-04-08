@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -29,7 +28,7 @@ export class Client {
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 
-  @OneToMany(() => ClientsConfig, (clientConfig) => clientConfig.client_id, {
+  @OneToMany(() => ClientsConfig, (clientConfig) => clientConfig.client, {
     cascade: true,
     eager: true,
   })

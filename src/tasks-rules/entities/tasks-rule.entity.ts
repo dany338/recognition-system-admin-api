@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -23,12 +24,14 @@ export class TasksRule {
   task_id: number;
 
   @ManyToOne(() => Task, (task) => task.tasksrules, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'task_id', referencedColumnName: 'task_id' })
   task: Task;
 
   @ManyToOne(() => Rule, (rule) => rule.tasksrules, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'rule_id', referencedColumnName: 'rule_id' })
   rule: Rule;
 
-  @OneToMany(() => TaskRuleParameter, (taskruleparameter) => taskruleparameter.task_rule_id, {
+  @OneToMany(() => TaskRuleParameter, (taskruleparameter) => taskruleparameter.taskrule, {
     cascade: true,
     eager: true,
   })

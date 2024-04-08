@@ -10,6 +10,7 @@ import {
 import { TasksRule } from './../../tasks-rules/entities/tasks-rule.entity';
 import { RulesModel } from './../../rules-models/entities/rules-model.entity';
 import { RuleParameter } from './../../rule-parameters/entities/rule-parameter.entity';
+import { RuleOutput } from './../../rule-outputs/entities/rule-output.entity';
 
 @Entity({ name: 'rules' })
 export class Rule {
@@ -37,21 +38,27 @@ export class Rule {
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 
-  @OneToMany(() => TasksRule, (tasksrule) => tasksrule.rule_id, {
+  @OneToMany(() => TasksRule, (tasksrule) => tasksrule.rule, {
     cascade: true,
     eager: true,
   })
   tasksrules?: TasksRule[];
 
-  @OneToMany(() => RulesModel, (rulesmodel) => rulesmodel.rule_id, {
+  @OneToMany(() => RulesModel, (rulesmodel) => rulesmodel.rule, {
     cascade: true,
     eager: true,
   })
   rulesmodels?: RulesModel[];
 
-  @OneToMany(() => RuleParameter, (rulesparameter) => rulesparameter.rule_id, {
+  @OneToMany(() => RuleParameter, (rulesparameter) => rulesparameter.rule, {
     cascade: true,
     eager: true,
   })
   rulesparameters?: RuleParameter[];
+
+  @OneToMany(() => RuleOutput, (ruleoutputs) => ruleoutputs.rule, {
+    cascade: true,
+    eager: true,
+  })
+  ruleoutputs?: RuleOutput[];
 }

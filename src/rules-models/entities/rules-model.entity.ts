@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -20,8 +21,10 @@ export class RulesModel {
   rule_id: number;
 
   @ManyToOne(() => Model, (model) => model.rulesmodels, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'model_id', referencedColumnName: 'model_id' })
   model: Model;
 
   @ManyToOne(() => Rule, (rule) => rule.tasksrules, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'rule_id', referencedColumnName: 'rule_id' })
   rule: Rule;
 }
