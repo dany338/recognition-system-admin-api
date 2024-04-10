@@ -14,6 +14,12 @@
 npm run start:dev
 ```
 
+### Documentación hecha en swagger
+
+```shell
+http://localhost:3000/api
+```
+
 ### Documentación hecha en postman
 
 [postman](https://documenter.getpostman.com/view/1864602/2sA3BgAFhQ)
