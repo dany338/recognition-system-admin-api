@@ -24,18 +24,15 @@ http://localhost:3000/api
 
 [postman](https://documenter.getpostman.com/view/1864602/2sA3BgAFhQ)
 
-7. Test those endpoints
-```
+### Clonar la tarea
+
+```shell
 localhost:3000/api/tasks/clone/:id number
 ```
 
+### POST: localhost:3000/api/tasks - crear la tarea
 
-Aquí está el JSON de configuración para la tarea:
-
-```
-POST: localhost:3000/api/tasks
-
-json
+```json
 {
   "task_key": "exampleTaskKey - Daniel test",
   "name": "Example Task Name - Daniel test",
@@ -70,10 +67,9 @@ json
 }
 ```
 
-```
-POST: localhost:3000/api/rules
+### POST: localhost:3000/api/rules - crear la regla
 
-json
+```json
 {
   "name": "Regla de Ejemplo - Daniel test",
   "version": "1.0 - Daniel test",
