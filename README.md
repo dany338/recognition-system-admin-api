@@ -14,7 +14,11 @@
 npm run start:dev
 ```
 
-6. Test those endpoints
+### Documentación hecha en postman
+
+[postman](https://documenter.getpostman.com/view/1864602/2sA3BgAFhQ)
+
+7. Test those endpoints
 ```
 localhost:3000/api/tasks/clone/:id number
 ```
