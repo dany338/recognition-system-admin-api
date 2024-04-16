@@ -1,0 +1,52 @@
+steps:
+#step 1
+- name: 'gcr.io/cloud-builders/docker' 
+  args: [
+   'build',
+   '--build-arg', 'SECRET_NAME=$_SECRET_NAME',
+   '--build-arg', 'SECRET_PROJECT_ID=$_SECRET_PROJECT_ID',
+   '--build-arg', 'SECRET_VERSION=$_SECRET_VERSION',
+   '--build-arg', 'ENV=$_ENV',
+   '-t',
+   'gcr.io/$_PROJECT_ID/$_SERVICE_NAME:$_ENV',
+   '.'
+  ]
+#step 2
+- name: gcr.io/cloud-builders/docker
+  args: [
+   'push', 
+   'gcr.io/$_PROJECT_ID/$_SERVICE_NAME:$_ENV'
+  ]
+
+- name: "gcr.io/cloud-builders/gke-deploy"
+  args:
+  - run
+  - --filename=./k8s/dev
+  - --image=gcr.io/$_PROJECT_ID/$_SERVICE_NAME:$_ENV
+  - --location=$_LOCATION
+  - --cluster=$_CLUSTER
+  - --namespace=$_NAMESPACE
+  env:
+  - 'NAMESPACE_PLACEHOLDER=$_NAMESPACE'
+  - 'ENVIRONMENT_PLACEHOLDER=$_ENV'
+  - 'SERVICE_ACCOUNT_PLACEHOLDER=$_SERVICE_ACCOUNT'
+
+
+
+options:
+  dynamicSubstitutions: true
+  logging: CLOUD_LOGGING_ONLY
+  workerPool:
+    'projects/$_PROJECT_ID/locations/$_LOCATION/workerPools/cloud_build_pool'
+
+substitutions:
+  _ENV: 'dev'
+  _SERVICE_NAME: 'recognition-admin-api'
+  _CLUSTER: 'autopilot-cluster'
+  _NAMESPACE: 'recognition-dev'
+  _SERVICE_ACCOUNT: 'recognition-admin-api-dev'
+  _PROJECT_ID: 'lucro-recognition-system'
+  _LOCATION: 'us-central1'
+  _SECRET_VERSION: '6'
+  _SECRET_PROJECT_ID: '569397935990'
+  _SECRET_NAME: 'recognition_admin_api_dev'

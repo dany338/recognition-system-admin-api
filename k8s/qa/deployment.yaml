@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recognition-admin-api-deployment
+  labels:
+    app: recognition-admin-api
+    environment: qa
+  namespace: recognition-qa
+spec:
+  # strategy:
+  #   type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: recognition-admin-api
+  template:
+    metadata:
+      labels:
+        app: recognition-admin-api
+        environment: qa
+    spec:
+      containers:
+      - image: gcr.io/lucro-recognition-system/recognition-admin-api:qa
+        # imagePullPolicy: IfNotPresent
+        name: recognition-admin-api
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 500m
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+            # scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 10
+      serviceAccountName: recognition-admin-api-qa
