@@ -5,11 +5,13 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, DeepPartial, Repository } from 'typeorm';
 import { v4 as uuid, validate as isUUID } from 'uuid';
+import { PaginationDto } from './../common/dtos/pagination.dto';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { ImportTaskDto } from './dto/import-task.dto';
 import { Task } from './entities/task.entity';
 import { TasksRule } from './../tasks-rules/entities/tasks-rule.entity';
 import { TaskRuleParameter } from './../task-rule-parameters/entities/task-rule-parameter.entity';
@@ -92,8 +94,128 @@ export class TasksService {
     }
   }
 
-  findAll() {
-    return `This action returns all tasks`;
+  async findAll(paginationDto: PaginationDto) {
+    try {
+      const { limit = 10, offset = 0, id = null, order, orderField = 'task_id' } = paginationDto;
+
+      const queryBuilder = this.taskRepository.createQueryBuilder('task');
+
+      // queryBuilder
+      //   .leftJoinAndSelect('task.client_config', 'client_config')
+      //   .leftJoinAndSelect('client_config.client', 'client')
+      //   .leftJoinAndSelect('client_config.clientMetadataSchema', 'clientMetadataSchema')
+      //   .leftJoinAndSelect('task.tasksrules', 'tasksrules')
+      //   .leftJoinAndSelect('tasksrules.taskruleparameters', 'taskruleparameters')
+      //   .leftJoinAndSelect('tasksrules.rule', 'rule');
+
+      queryBuilder
+        .addSelect([
+          'client_config.default_bucket',
+        ])
+        .leftJoin('task.client_config', 'client_config')
+        .addSelect([
+          'client.client_id',
+          'client.client_uid',
+          'client.name',
+        ])
+        .leftJoin('client_config.client', 'client')
+        .addSelect([
+          'clientMetadataSchema.client_metadata_schema_id',
+          'clientMetadataSchema.normalized_key',
+          'clientMetadataSchema.required',
+          'clientMetadataSchema.validation',
+          'clientMetadataSchema.validator_id',
+          'clientMetadataSchema.type_value',
+          'clientMetadataSchema.key',
+          'clientMetadataSchema.label',
+        ])
+        .leftJoin('client_config.clientMetadataSchema', 'clientMetadataSchema');
+
+      queryBuilder
+        .addSelect([
+          'tasksrules.task_rule_id',
+        ])
+        .leftJoin('task.tasksrules', 'tasksrules')
+        .addSelect([
+          'taskruleparameters.task_rule_parameter_id',
+          'taskruleparameters.value',
+          'taskruleparameters.rule_parameter_id'
+        ])
+        .leftJoin('tasksrules.taskruleparameters', 'taskruleparameters')
+        .addSelect([
+          'rule.rule_id',
+          'rule.name',
+          'rule.version',
+          'rule.description',
+          'rule.function_name',
+          'rule.weight',
+        ])
+        .leftJoin('tasksrules.rule', 'rule');
+
+      if (id) {
+        queryBuilder.andWhere('task.task_id = :id', { id });
+      }
+
+      queryBuilder.take(limit).skip(offset).orderBy(`task.${orderField}`, order);
+
+      const tasks = await queryBuilder.getMany() ?? [];
+
+      return tasks;
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
+  }
+
+  // async import(importTaskDto: ImportTaskDto[]) {
+  //   try {
+  //     const tasks = importTaskDto.map((task) => {
+  //       const { tasksrules = [], ...taskDetails } = task;
+  //       return this.taskRepository.create({
+  //         ...taskDetails,
+  //         tasksrules: tasksrules.map((taskrule) =>
+  //           this.tasksRuleRepository.create({
+  //             ...taskrule as DeepPartial<TasksRule>,
+  //             taskruleparameters: taskrule.taskruleparameters?.map((taskruleparameter) =>
+  //               this.taskRuleParameterRepository.create(
+  //                 taskruleparameter as DeepPartial<TaskRuleParameter>,
+  //               ),
+  //             ),
+  //           }),
+  //         ),
+  //       });
+  //     });
+
+  //     await this.taskRepository.save(tasks);
+  //     return tasks;
+  //   } catch (error) {
+  //     this.handleDBExceptions(error);
+  //   }
+  // }
+
+  async import(importTaskDto: ImportTaskDto[]) {
+    return await this.taskRepository.manager.transaction(async entityManager => {
+      try {
+        const tasks = importTaskDto.map(taskDto => {
+          const { tasksrules = [], task_id, client_config, ...taskDetails } = taskDto;
+          const task = entityManager.create(Task, taskDetails as DeepPartial<Task>);
+          task.tasksrules = tasksrules.map(taskruleDto => {
+            const { task_rule_id, ...ruleDetails } = taskruleDto;
+            const taskrule = entityManager.create(TasksRule, ruleDetails as DeepPartial<TasksRule>);
+            taskrule.taskruleparameters = taskruleDto.taskruleparameters?.map(paramDto => {
+              const { task_rule_parameter_id, ...paramDetails } = paramDto;
+              return entityManager.create(TaskRuleParameter, paramDetails as DeepPartial<TaskRuleParameter>)
+            });
+            return taskrule;
+          });
+          return task;
+        });
+
+        await entityManager.save(Task, tasks);
+        return tasks;
+      } catch (error) {
+        throw new Error('Failed to import tasks due to an error: ' + error.message);
+      }
+    });
   }
 
   findOne(id: number) {

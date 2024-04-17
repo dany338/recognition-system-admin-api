@@ -7,11 +7,14 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { ImportTaskDto } from './dto/import-task.dto';
+import { PaginationDto } from './../common/dtos/pagination.dto';
 
 @ApiTags('Tasks')
 @Controller('tasks')
@@ -27,13 +30,23 @@ export class TasksController {
     return this.tasksService.create(createTaskDto);
   }
 
+  @Post('/import')
+  @ApiBody({ type: [ImportTaskDto] })
+  @ApiResponse({ status: 201, description: 'Task imported.' })
+  @ApiResponse({ status: 400, description: 'Bad request.' })
+  @ApiResponse({ status: 403, description: 'Forbidden. Token related.' })
+  @ApiResponse({ status: 500, description: 'Internal server error.' })
+  import(@Body() importTaskDto: ImportTaskDto[]) {
+    return this.tasksService.import(importTaskDto);
+  }
+
   @Get()
   @ApiResponse({ status: 200, description: 'Tasks found.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @ApiResponse({ status: 403, description: 'Forbidden. Token related.' })
   @ApiResponse({ status: 500, description: 'Internal server error.' })
-  findAll() {
-    return this.tasksService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.tasksService.findAll(paginationDto);
   }
 
   @Get('/clone/:id')

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   CreateDateColumn,
@@ -41,10 +42,11 @@ export class ClientMetadataSchema {
   @UpdateDateColumn({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updated_at: Date;
 
+  @ApiProperty()
   @OneToMany(() => ClientsConfig, (clientConfig) => clientConfig.client, {
     cascade: true,
-    eager: true,
+    // eager: true,
   })
   // @JoinColumn({ name: 'client_metadata_schema_id' })
-  configs?: ClientsConfig[];
+  clientConfigs?: ClientsConfig[];
 }

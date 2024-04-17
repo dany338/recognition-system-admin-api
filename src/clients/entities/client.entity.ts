@@ -50,7 +50,7 @@ export class Client {
   @ApiProperty()
   @OneToMany(() => ClientsConfig, (clientConfig) => clientConfig.client, {
     cascade: true,
-    eager: true,
+    // eager: true,
   })
   configs?: ClientsConfig[];
 
