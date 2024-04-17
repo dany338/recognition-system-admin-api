@@ -41,7 +41,7 @@ export class ClientsConfig {
     description: 'Client Metadata Schema ID',
   })
   @Column('int', { nullable: true })
-  client_metadata_schema_id?: number;
+  client_metadata_schema_id?: number | null;
 
   @ApiProperty({
     required: false,
@@ -67,14 +67,14 @@ export class ClientsConfig {
   @ApiProperty()
   @OneToMany(() => Task, (task) => task.client_config, {
     cascade: true,
-    eager: true,
+    // eager: true,
   })
   tasks?: Task[];
 
   @ApiProperty()
   @ManyToOne(
     () => ClientMetadataSchema,
-    (clientMetadataSchema) => clientMetadataSchema.configs,
+    (clientMetadataSchema) => clientMetadataSchema.clientConfigs,
     { onDelete: 'CASCADE' },
   )
   @JoinColumn({ name: 'client_metadata_schema_id', referencedColumnName: 'client_metadata_schema_id' })

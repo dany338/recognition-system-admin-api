@@ -28,17 +28,17 @@ export class ClientMetadataSchemasService {
 
   async create(createClientDto: CreateClientMetadataSchemaDto) {
     try {
-      const { configs = [], ...lientMetadataSchemaDetails } = createClientDto;
+      const { clientConfigs = [], ...lientMetadataSchemaDetails } = createClientDto;
       const client = this.clientMetadataSchemaRepository.create({
         ...lientMetadataSchemaDetails,
-        configs: configs.map((config) =>
+        clientConfigs: clientConfigs.map((config) =>
           this.clientsConfigRepository.create(
             config as DeepPartial<ClientsConfig>,
           ),
         ),
       });
       await this.clientMetadataSchemaRepository.save(client);
-      return { ...client, configs };
+      return { ...client, clientConfigs };
     } catch (error) {
       this.handleDBExceptions(error);
     }
@@ -51,13 +51,13 @@ export class ClientMetadataSchemasService {
       take: limit,
       skip: offset,
       relations: {
-        configs: true,
+        clientConfigs: true,
       },
     });
 
     return clients.map((client) => ({
       ...client,
-      configs: client.configs.map((config) => config.default_bucket),
+      configs: client.clientConfigs.map((config) => config.default_bucket),
     }));
   }
 
@@ -83,15 +83,15 @@ export class ClientMetadataSchemasService {
   }
 
   async findOnePlain(term: string) {
-    const { configs = [], ...rest } = await this.findOne(term);
+    const { clientConfigs = [], ...rest } = await this.findOne(term);
     return {
       ...rest,
-      configs: configs.map((config) => config.default_bucket),
+      configs: clientConfigs.map((config) => config.default_bucket),
     };
   }
 
   async update(id: number, updateProductDto: UpdateClientMetadataSchemaDto) {
-    const { configs, ...toUpdate } = updateProductDto;
+    const { clientConfigs, ...toUpdate } = updateProductDto;
 
     const client = await this.clientMetadataSchemaRepository.preload({
       client_metadata_schema_id: id,
@@ -105,10 +105,10 @@ export class ClientMetadataSchemasService {
     await queryRunner.startTransaction();
 
     try {
-      if (configs) {
+      if (clientConfigs) {
         // await queryRunner.manager.delete(ClientsConfig, { client: { client_id: id } });
 
-        client.configs = configs.map((config) =>
+        client.clientConfigs = clientConfigs.map((config) =>
           this.clientsConfigRepository.create(config as DeepPartial<ClientsConfig>),
         );
       }

@@ -88,7 +88,7 @@ export class Task {
   @ApiProperty()
   @OneToMany(() => TasksRule, (tasksrule) => tasksrule.task, {
     cascade: true,
-    eager: true,
+    // eager: true,
   })
   tasksrules?: TasksRule[];
 }

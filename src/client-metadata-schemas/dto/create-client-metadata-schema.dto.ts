@@ -28,5 +28,5 @@ export class CreateClientMetadataSchemaDto {
   @IsString({ each: true })
   @IsArray()
   @IsOptional()
-  configs?: DeepPartial<ClientsConfig>[];
+  clientConfigs?: DeepPartial<ClientsConfig>[];
 }
