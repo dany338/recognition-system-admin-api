@@ -12,6 +12,7 @@ import { TasksRule } from './../../tasks-rules/entities/tasks-rule.entity';
 import { RulesModel } from './../../rules-models/entities/rules-model.entity';
 import { RuleParameter } from './../../rule-parameters/entities/rule-parameter.entity';
 import { RuleOutput } from './../../rule-outputs/entities/rule-output.entity';
+import { TaskRuleLabel } from 'src/task-rule-labels/entities/task-rule-label.entity';
 
 @Entity({ name: 'rules' })
 export class Rule {
@@ -104,4 +105,11 @@ export class Rule {
     eager: true,
   })
   ruleoutputs?: RuleOutput[];
+
+  @ApiProperty()
+  @OneToMany(() => TaskRuleLabel, (taskrulelabel) => taskrulelabel.rule, {
+    cascade: true,
+    // eager: true,
+  })
+  taskrulelabels?: TaskRuleLabel[];
 }

@@ -11,6 +11,7 @@ import {
 import { ClientsConfig } from '../../clients-configs/entities/clients-config.entity';
 import { TasksRule } from './../../tasks-rules/entities/tasks-rule.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { TaskRuleLabel } from 'src/task-rule-labels/entities/task-rule-label.entity';
 
 @Entity({ name: 'tasks' })
 export class Task {
@@ -91,4 +92,11 @@ export class Task {
     // eager: true,
   })
   tasksrules?: TasksRule[];
+
+  @ApiProperty()
+  @OneToMany(() => TaskRuleLabel, (taskrulelabel) => taskrulelabel.task, {
+    cascade: true,
+    // eager: true,
+  })
+  taskrulelabels?: TaskRuleLabel[];
 }
